@@ -1,0 +1,16 @@
+:root {
+  --primary-color-rgb: 0, 102, 255;
+  --secondary-color-rgb: 30, 30, 30;
+  --text-color: white;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}

@@ -1,8 +1,4 @@
-<?php
-wp_nav_menu([
-    'theme_location' => 'primary',
-]);
-?>
+<?php get_header(); ?>
 
 <?php
 if (have_posts()) :
@@ -14,3 +10,4 @@ if (have_posts()) :
 endif;
 ?>
 
+<?php get_footer(); ?>

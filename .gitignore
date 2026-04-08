@@ -3,3 +3,4 @@ wp-content/uploads/
 .env
 node_modules/
 vendor/
+*for-the-nest
