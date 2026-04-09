@@ -12,11 +12,11 @@
 
 .nav-fixed {
   position: fixed;
-  transform: translateY(calc(-1 * var(--nav-hide-offset)));
+  transform: translateY(-100%);
   transition: transform 300ms ease;
 }
 
-.nav-wrap.nav-fixed.nav-show {
+.nav-show {
   transform: translateY(0);
 }
 
@@ -25,11 +25,22 @@
 }
 
 /* =========================
+   THEME TOGGLE
+========================= */
+
+#theme-toggle {
+  position: relative;
+  margin: auto 20px;
+}
+#theme-toggle span {
+  cursor: pointer;
+}
+
+/* =========================
    LISTS
 ========================= */
 
-.nav-list,
-.nav-breadcrumbs-list {
+.nav-list {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -38,8 +49,7 @@
 }
 
 @media (max-width: 449px) {
-  .nav-list,
-  .nav-breadcrumbs-list {
+  .nav-list {
     display: grid;
     grid-template-columns: repeat(2, auto);
     justify-content: end;
@@ -50,8 +60,7 @@
    LINKS
 ========================= */
 
-.nav-list a,
-.nav-breadcrumbs-list a {
+.nav-list a {
   position: relative;
   display: inline-block;
   margin: 14px 20px;
@@ -60,8 +69,7 @@
   transition: color 0.3s ease;
 }
 
-.nav-list a::after,
-.nav-breadcrumbs-list a::after {
+.nav-list a::after {
   content: "";
   position: absolute;
   left: 0;
@@ -78,54 +86,24 @@
   transform-origin: left;
 }
 
-.nav-breadcrumbs-list a::after {
-  transform-origin: right;
-}
-
-.nav-list a:hover::after,
-.nav-breadcrumbs-list a:hover::after {
+.nav-list a:hover::after {
   transform: scaleX(1);
 }
 
-.nav-breadcrumbs-list span {
-  color: lightgray;
-  margin: 14px 20px;
-}
-
 /* =========================
-   BREADCRUMBS
+   GAPS
 ========================= */
-
-.nav-breadcrumbs {
-  position: relative;
+.nav-left-gap {
   flex: 1 1 auto;
-  min-width: 0;
-  overflow: hidden;
   background-color: rgba(var(--secondary-color-rgb), 0.75);
 }
-
-.nav-breadcrumbs::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: -30px;
-  width: 30px;
-  height: 100%;
-  background: inherit;
-  clip-path: polygon(100% 0, 0 0, 0 100%);
-}
-
-/* =========================
-   GAP
-========================= */
-
-.nav-gap {
+.nav-center-gap {
   flex: 0 0 30px;
   width: 30px;
   position: relative;
 }
 
-.nav-gap::before {
+.nav-center-gap::before {
   content: "";
   position: absolute;
   inset: 0;

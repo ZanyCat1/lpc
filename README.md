@@ -15,19 +15,25 @@ This project is structured as a **professional WordPress development environment
 ---
 
 # 0. Setup on Remote:
+
 On remote:
+
 ```
 docker volume create ${COMPOSE_PROJECT_NAME}_db_data
 ```
+
 On dev:
+
 ```
 ./init.sh
 ```
 
-Now any changes you make in dev, you will be able to run 
+Now any changes you make in dev, you will be able to run
+
 ```
 ./deploy.sh
 ```
+
 to propagate them to prod
 
 ---
@@ -35,6 +41,7 @@ to propagate them to prod
 # 1. Project Structure
 
 ## Root Project Layout
+
 ```
 ${COMPOSE_PROJECT_NAME}-site/
 ├── compose.yml
@@ -47,7 +54,9 @@ ${COMPOSE_PROJECT_NAME}-site/
 │   └── themes/
 │       └── ${COMPOSE_PROJECT_NAME}-theme/
 ```
+
 You may optionally include full WordPress files, but best practice is:
+
 - Let Docker manage WordPress core
 - Only version control your theme + config
 - php/uploads.ini increases max upload file size
@@ -57,6 +66,7 @@ You may optionally include full WordPress files, but best practice is:
 # 2. Docker Setup
 
 ## compose.yml
+
 ```
 version: "3.9"
 
@@ -94,10 +104,12 @@ volumes:
     external: true
     name: ${COMPOSE_PROJECT_NAME}_db_data
 ```
+
 ---
 
 # 3. Theme Architecture
-~~~
+
+```
 ${COMPOSE_PROJECT_NAME}-theme/
 ├── style.css
 ├── functions.php
@@ -132,7 +144,8 @@ ${COMPOSE_PROJECT_NAME}-theme/
 ├── templates/
     ├── page-home.php
     ├── page-about.php
-~~~
+```
+
 ---
 
 # 4. CSS Strategy
@@ -142,14 +155,16 @@ ${COMPOSE_PROJECT_NAME}-theme/
 - base.css → typography, resets, variables
 - layout.css → containers, header/footer, layout
 - components.css → buttons, forms, UI elements
-- pages/*.css → only when necessary
+- pages/\*.css → only when necessary
 
 ## style.css
+
 ```
 @import url("assets/css/base.css");
 @import url("assets/css/layout.css");
 @import url("assets/css/components.css");
 ```
+
 ## Rule
 
 Reuse global styles first. Only create page-specific CSS when necessary.
@@ -159,11 +174,14 @@ Reuse global styles first. Only create page-specific CSS when necessary.
 # 5. JavaScript Strategy
 
 ## functions.php (minimal)
+
 ```
 require_once get_template_directory() . '/inc/enqueue.php';
 require_once get_template_directory() . '/inc/setup.php';
 ```
+
 ## enqueue.php
+
 ```
 function ${COMPOSE_PROJECT_NAME}_enqueue_assets() {
     wp_enqueue_style('main-style', get_stylesheet_uri());
@@ -188,22 +206,26 @@ function ${COMPOSE_PROJECT_NAME}_enqueue_assets() {
 }
 add_action('wp_enqueue_scripts', '${COMPOSE_PROJECT_NAME}_enqueue_assets');
 ```
+
 ---
 
 # 6. Page Templates
 
 Templates live in /templates/ and must include:
+
 ```
 <?php
 /*
 Template Name: Home Page
 */
 ```
+
 ---
 
 # 7. LAN + Localhost Access
 
 ## wp-config.php (dynamic environment detection)
+
 ```
 $host = $_SERVER['HTTP_HOST'];
 
@@ -215,6 +237,7 @@ if (strpos($host, 'localhost') !== false || strpos($host, '192.168.') !== false)
     define('WP_SITEURL', 'https://yourdomain.com');
 }
 ```
+
 ## Result
 
 - localhost:8080 → works
@@ -232,6 +255,7 @@ wp-config.php
 ## Instead:
 
 wp-config.php.example
+
 ```
 ## .gitignore
 
@@ -240,6 +264,7 @@ node_modules/
 vendor/
 .env
 ```
+
 ---
 
 # 9. Database Strategy
@@ -247,6 +272,7 @@ vendor/
 Do NOT share DB between dev and prod.
 
 Reasons:
+
 - URL conflicts
 - risk of breaking production
 - serialized data corruption
@@ -255,21 +281,25 @@ Reasons:
 ---
 
 # 10. Database Sync Workflow
+
 ```
 ## Export
 
 wp db export dump.sql
 ```
+
 ```
 ## Replace URLs safely
 
 wp search-replace 'http://dev-url' 'https://prod-url' --export=dump-prod.sql
 ```
+
 ```
 ## Import (prod)
 
 wp db import dump-prod.sql
 ```
+
 ---
 
 # 11. Media (Uploads)
@@ -278,20 +308,24 @@ wp db import dump-prod.sql
 
 - Files live in /wp-content/uploads/
 - DB stores metadata only
+
 ```
 ## Sync
 
 rsync -avz wp-content/uploads/ user@server:/var/www/html/wp-content/uploads/
 ```
+
 ## Important
 
 - Do NOT manually insert media into DB
 - Do NOT re-upload unless necessary
+
 ```
 ## Optional
 
 wp media regenerate
 ```
+
 ---
 
 # 12. Deployment Workflow
@@ -301,6 +335,7 @@ wp media regenerate
 DEV → PROD
 
 ## Deploy Script Example
+
 ```
 #!/bin/bash
 
@@ -327,14 +362,15 @@ rsync -avz wp-content/themes/${COMPOSE_PROJECT_NAME}-theme/ user@server:/var/www
 
 echo "Done."
 ```
+
 ---
 
 # 13. Separation of Concerns
 
-Theme  → Git  
-DB     → WP-CLI  
-Media  → rsync  
-WP Core→ Docker  
+Theme → Git  
+DB → WP-CLI  
+Media → rsync  
+WP Core→ Docker
 
 ---
 

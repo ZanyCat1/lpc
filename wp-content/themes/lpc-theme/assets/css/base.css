@@ -9,6 +9,16 @@ body {
   font-family: system-ui, sans-serif;
 }
 
+body.dark {
+  --primary-color-rgb: 255, 153, 0;
+  --secondary-color-rgb: 225, 225, 225;
+  --text-color: black;
+}
+
+main {
+  min-height: 100vh;
+}
+
 .container {
   width: 100%;
   max-width: 1200px;

@@ -1,7 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // =====================
+  // THEME TOGGLE
+  // =====================
+
   const toggle = document.getElementById("theme-toggle");
   const icon = toggle?.querySelector(".icon");
-console.log("NAV JS LOADED");
+
   function setTheme(mode) {
     document.body.classList.remove("light", "dark");
 
@@ -22,49 +26,130 @@ console.log("NAV JS LOADED");
   }
 
   toggle?.addEventListener("click", () => {
-    if (document.body.classList.contains("dark")) {
-      setTheme("light");
-    } else {
-      setTheme("dark");
-    }
+    const isDark = document.body.classList.contains("dark");
+    setTheme(isDark ? "light" : "dark");
   });
+
+  // =====================
+  // NAV SETUP
+  // =====================
 
   const navDock = document.getElementById("nav-wrap-dock");
   const nav = document.querySelector(".nav-wrap");
 
   if (!nav || !navDock) return;
 
-  const wrapperRectOffset =
-    nav.getBoundingClientRect().bottom - window.scrollY;
-  const wrapperRectHeight = nav.offsetHeight;
+  navDock.style.height = nav.offsetHeight + "px";
+  const wrapperRectOffset = nav.getBoundingClientRect().bottom - window.scrollY;
+  console.log(`wrapperRectOffset just got set: ${wrapperRectOffset}`);
 
-  function updateNavHideOffset() {
-    const percent = (wrapperRectOffset / wrapperRectHeight) * 100;
-    nav.style.setProperty("--nav-hide-offset", percent + "%");
+  // function syncWrapperHeight() {}
+
+  function syncFooter() {
+    const headerNavbar = document.getElementById("header-navbar");
+    const footerNavbar = document.getElementById("footer-navbar");
+    if (!footerNavbar || !headerNavbar) return;
+
+    footerNavbar.style.height = headerNavbar.offsetHeight + "px";
+    footerNavbar.style.width = headerNavbar.offsetWidth + "px";
   }
 
-  function syncWrapperHeight() {
+  // =====================
+  // RESIZE HANDLER
+  // =====================
+  let isResizing = false;
+  let resizeTimer;
+
+  function handleResize() {
     navDock.style.height = nav.offsetHeight + "px";
+    isResizing = true;
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      isResizing = false;
+    }, 150);
   }
 
-  window.addEventListener("load", syncWrapperHeight);
-  window.addEventListener("resize", syncWrapperHeight);
+  // =====================
+  // SCROLL CONFIG
+  // =====================
 
-  window.addEventListener("scroll", () => {
+  const SHOW_THRESHOLD = 60;
+  const HIDE_THRESHOLD = 60;
+  const SCROLL_WINDOW = 300;
+
+  let lastScrollY = window.scrollY;
+  let lastScrollTime = Date.now();
+  let scrollUpDistance = 0;
+  let scrollDownDistance = 0;
+
+  // =====================
+  // SCROLL HANDLER
+  // =====================
+
+  function handleScroll() {
+    if (isResizing) return;
+
     const currentScrollY = window.scrollY;
-    const navPassed =
-      currentScrollY > wrapperRectOffset + wrapperRectHeight;
+    const delta = currentScrollY - lastScrollY;
 
-    if (navPassed) {
-      if (!nav.classList.contains("nav-fixed")) {
-        nav.classList.add("nav-fixed", "no-anim");
-        setTimeout(() => nav.classList.remove("no-anim"), 50);
-      }
-      nav.classList.add("nav-hide");
-    } else {
-      nav.classList.remove("nav-fixed", "nav-show", "nav-hide");
+    const scrollingUp = delta < 0;
+    const scrollingDown = delta > 0;
+
+    const wrapperRect = navDock.getBoundingClientRect();
+    const navRect = nav.getBoundingClientRect();
+    const wrapperVisible = wrapperRect.bottom > 0;
+    const wrapperLinedUp = navRect.top <= wrapperRect.top;
+    const navScrolledAway = currentScrollY > nav.offsetHeight;
+
+    const now = Date.now();
+    const timeSinceLast = now - lastScrollTime;
+
+    // reset if too slow
+    if (timeSinceLast > SCROLL_WINDOW) {
+      scrollUpDistance = 0;
+      scrollDownDistance = 0;
     }
 
-    updateNavHideOffset();
-  });
+    if (scrollingUp) {
+      scrollUpDistance += Math.abs(delta);
+      scrollDownDistance = 0;
+    } else if (scrollingDown) {
+      scrollDownDistance += delta;
+      scrollUpDistance = 0;
+    }
+
+    if (wrapperVisible && wrapperLinedUp) {
+      nav.classList.add("no-anim");
+      nav.classList.remove("nav-fixed", "nav-show");
+    }
+
+    if (navScrolledAway) {
+      nav.classList.add("nav-fixed");
+      void nav.offsetHeight;
+      nav.classList.remove("no-anim");
+
+      if (scrollUpDistance > SHOW_THRESHOLD) {
+        nav.classList.add("nav-show");
+        scrollUpDistance = 0;
+      }
+
+      if (scrollDownDistance > HIDE_THRESHOLD) {
+        nav.classList.remove("nav-show");
+        scrollDownDistance = 0;
+      }
+    }
+
+    lastScrollTime = now;
+    lastScrollY = currentScrollY;
+  }
+
+  // =====================
+  // EVENTS
+  // =====================
+
+  window.addEventListener("load", syncFooter);
+  window.addEventListener("resize", syncFooter);
+
+  window.addEventListener("resize", handleResize);
+  window.addEventListener("scroll", handleScroll);
 });

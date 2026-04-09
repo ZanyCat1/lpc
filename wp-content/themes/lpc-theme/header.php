@@ -8,30 +8,30 @@
 </head>
 
 <body <?php body_class(); ?>>
-<?php wp_body_open(); ?>
-<header class="site-header">
+  <?php wp_body_open(); ?>
+  <header class="site-header">
 
-  <div id="nav-wrap-dock">
-    <div class="nav-wrap">
+    <div id="nav-wrap-dock">
+      <div class="nav-wrap nav-show nav-fixed">
 
-      <nav class="nav-breadcrumbs"></nav>
-      <div class="nav-gap"></div>
+        <nav class="nav-left-gap"></nav>
+        <div class="nav-center-gap"></div>
 
-      <nav class="navbar" id="header-navbar">
-        <?php
-        wp_nav_menu([
-          'theme_location' => 'primary',
-          'container' => false,
-          'menu_class' => 'nav-list',
-        ]);
-        ?>
+        <nav class="navbar" id="header-navbar">
+          <?php
+          wp_nav_menu([
+            'theme_location' => 'primary',
+            'container' => false,
+            'menu_class' => 'nav-list',
+          ]);
+          ?>
 
-        <div class="theme-toggle" id="theme-toggle">
-          <span class="icon">🌙</span>
-        </div>
-      </nav>
+          <div id="theme-toggle">
+            <span class="icon">🌙</span>
+          </div>
+        </nav>
 
+      </div>
     </div>
-  </div>
 
-</header>
+  </header>
