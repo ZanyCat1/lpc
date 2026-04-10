@@ -6,14 +6,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let swiper;
 
-  document.querySelectorAll(".gallery-item").forEach((img) => {
-    console.log("binding", img);
+  const images = document.querySelectorAll(".wp-block-gallery img");
+
+  images.forEach((img, index) => {
+    img.style.cursor = "pointer";
+
     img.addEventListener("click", () => {
-      console.log("CLICKED");
-      const index = Number(img.dataset.index);
+      console.log("CLICKED", index);
+
       const gallery = window.galleryData || [];
 
-      // build slides
       wrapper.innerHTML = "";
 
       gallery.forEach((item) => {
@@ -21,28 +23,28 @@ document.addEventListener("DOMContentLoaded", () => {
         slide.classList.add("swiper-slide");
 
         slide.innerHTML = `
-          <div class="slide-inner">
+        <div class="slide-inner">
+          <div class="slide-content">
             <img 
-              src="${item.src}" alt="${item.alt || ""}"
-              srcset="${item.srcset || ""}"
-              sizes="${item.sizes} || ''}"
+              src="${item.src}" 
+              srcset="${item.srcset || ""}" 
+              sizes="${item.sizes || ""}" 
               alt="${item.alt || ""}"
             >
             <div class="slide-meta">
-              ${item.caption ? `<p class="caption">${item.caption}</p>` : ""}
-              ${item.description ? `<p class="description">${item.description}</p>` : ""}
+              ${item.caption ? `<strong>${item.caption}</strong>` : ""}
+              ${item.description ? `<p>${item.description}</p>` : ""}
             </div>
           </div>
-        `;
+        </div>
+      `;
 
         wrapper.appendChild(slide);
       });
 
-      // show modal
       modal.classList.remove("hidden");
       document.body.style.overflow = "hidden";
 
-      // init swiper
       if (swiper) swiper.destroy(true, true);
 
       swiper = new Swiper(".gallery-swiper", {
@@ -50,18 +52,18 @@ document.addEventListener("DOMContentLoaded", () => {
         initialSlide: index,
       });
     });
-  });
 
-  // close
-  closeBtn.onclick = () => {
-    modal.classList.add("hidden");
-    document.body.style.overflow = "";
-  };
-
-  modal.onclick = (e) => {
-    if (e.target === modal) {
+    // close
+    closeBtn.onclick = () => {
       modal.classList.add("hidden");
       document.body.style.overflow = "";
-    }
-  };
+    };
+
+    modal.onclick = (e) => {
+      if (e.target === modal) {
+        modal.classList.add("hidden");
+        document.body.style.overflow = "";
+      }
+    };
+  });
 });

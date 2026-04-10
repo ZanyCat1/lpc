@@ -16,23 +16,7 @@ foreach ($ids as $id) {
     'description' => get_post_field('post_content', $id),
   ];
 }
-
-// first image = poster
-$poster = $images[0] ?? null;
 ?>
-
-<?php if ($poster): ?>
-  <div class="gallery">
-    <img
-      src="<?php echo esc_url($poster['src']); ?>"
-      class="gallery-item"
-      srcset="<?php echo esc_attr($poster['srcset'] ?? ''); ?>"
-      sizes="(max-width: 768px) 100vw, 80vw""
-      alt=" <?php echo esc_attr($psoter['alt'] ?? ''); ?>"
-      data-index="0"
-      style="cursor:pointer;">
-  </div>
-<?php endif; ?>
 
 <!-- modal -->
 <div id="gallery-modal" class="modal hidden">
