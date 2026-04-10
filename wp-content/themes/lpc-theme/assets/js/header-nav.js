@@ -16,14 +16,17 @@ document.addEventListener("DOMContentLoaded", () => {
       document.body.classList.add("light");
       if (icon) icon.textContent = "🌙";
     }
+    localStorage.setItem("theme", mode);
   }
 
   // initial theme
-  if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-    setTheme("dark");
-  } else {
-    setTheme("light");
-  }
+  const savedTheme =
+    localStorage.getItem("theme") ||
+    (window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light");
+
+  setTheme(savedTheme);
 
   toggle?.addEventListener("click", () => {
     const isDark = document.body.classList.contains("dark");

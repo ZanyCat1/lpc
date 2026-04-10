@@ -1,18 +1,31 @@
 :root {
-  --primary-color-rgb: 0, 102, 255;
-  --secondary-color-rgb: 30, 30, 30;
-  --text-color: white;
+  --primary-color-rgb: 255, 153, 0;
+  --secondary-color-rgb: 225, 225, 225;
+
+  --primary-bg-color-rgb: 255, 255, 240;
+  --secondary-bg-color: 192, 192, 192;
+  --text-color: black;
 }
 
 body {
   margin: 0;
   font-family: system-ui, sans-serif;
+  color: var(--text-color);
+  background: linear-gradient(
+    to top left,
+    rgb(var(--primary-bg-color-rgb)),
+    rgb(var(--secondary-bg-color)),
+    rgb(var(--primary-bg-color-rgb))
+  );
 }
 
 body.dark {
-  --primary-color-rgb: 255, 153, 0;
-  --secondary-color-rgb: 225, 225, 225;
-  --text-color: black;
+  --primary-color-rgb: 0, 102, 255;
+  --secondary-color-rgb: 30, 30, 30;
+
+  --primary-bg-color-rgb: 0, 0, 15;
+  --secondary-bg-color: 63, 63, 63;
+  --text-color: white;
 }
 
 main {
