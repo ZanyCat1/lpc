@@ -13,7 +13,7 @@
 .nav-fixed {
   position: fixed;
   transform: translateY(-100%);
-  transition: transform 300ms ease;
+  transition: transform var(--animation-duration) ease;
 }
 
 .nav-show {
@@ -36,6 +36,12 @@
   cursor: pointer;
 }
 
+.nav-left-gap,
+.nav-center-gap::before,
+.navbar,
+.navbar::before {
+  transition: background-color var(--animation-duration) ease;
+}
 /* =========================
    LISTS
 ========================= */
@@ -66,7 +72,7 @@
   margin: 14px 20px;
   text-decoration: none;
   color: var(--text-color);
-  transition: color 0.3s ease;
+  transition: color var(--animation-duration) ease;
 }
 
 .nav-list a::after {
@@ -79,7 +85,7 @@
   background: white;
 
   transform: scaleX(0);
-  transition: transform 0.3s ease;
+  transition: transform var(--animation-duration) ease;
 }
 
 .nav-list a::after {
@@ -101,6 +107,8 @@
   flex: 0 0 30px;
   width: 30px;
   position: relative;
+  background: transparent;
+  overflow: hidden;
 }
 
 .nav-center-gap::before {
@@ -115,8 +123,18 @@
    NAVBAR
 ========================= */
 
+.nav-wrap {
+  background: linear-gradient(
+    to top left,
+    var(--header-gap-gradient-1),
+    var(--header-gap-gradient-2),
+    var(--header-gap-gradient-1)
+  );
+}
+
 .navbar {
   position: relative;
+  /* flex: 0 0 auto; */
   display: flex;
   justify-content: flex-end;
   width: fit-content;

@@ -1,3 +1,9 @@
+// avoid animating on page load, especially for dark mode
+document.documentElement.classList.add("no-transition");
+window.addEventListener("load", () => {
+  document.documentElement.classList.remove("no-transition");
+});
+
 document.addEventListener("DOMContentLoaded", () => {
   // =====================
   // THEME TOGGLE

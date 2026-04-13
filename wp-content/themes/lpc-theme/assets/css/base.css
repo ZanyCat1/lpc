@@ -1,3 +1,15 @@
+@property --body-gradient-1 {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: white;
+}
+
+@property --body-gradient-2 {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: black;
+}
+
 :root {
   --primary-color-rgb: 255, 153, 0;
   --secondary-color-rgb: 225, 225, 225;
@@ -5,6 +17,19 @@
   --primary-bg-color-rgb: 255, 255, 240;
   --secondary-bg-color: 192, 192, 192;
   --text-color: black;
+
+  --body-gradient-1: rgb(116, 113, 109);
+  --body-gradient-2: rgb(207, 239, 247);
+
+  --animation-duration: 800ms;
+}
+
+/* default: no transitions on load */
+.no-transition,
+.no-transition *,
+.no-transition *::before,
+.no-transition *::after {
+  transition: none !important;
 }
 
 body {
@@ -13,14 +38,20 @@ body {
   color: var(--text-color);
   background: linear-gradient(
     to top left,
-    rgb(var(--primary-bg-color-rgb)),
-    rgb(var(--secondary-bg-color)),
-    rgb(var(--primary-bg-color-rgb))
+    var(--body-gradient-1),
+    var(--body-gradient-2),
+    var(--body-gradient-1)
   );
+  transition:
+    --body-gradient-1 var(--animation-duration),
+    --body-gradient-2 var(--animation-duration);
 }
 
 body.dark {
-  --primary-color-rgb: 0, 102, 255;
+  --body-gradient-1: rgb(0, 102, 255);
+  --body-gradient-2: rgb(30, 30, 30);
+
+  --primary-color-rgb: 0, 103, 255;
   --secondary-color-rgb: 30, 30, 30;
 
   --primary-bg-color-rgb: 0, 0, 15;
