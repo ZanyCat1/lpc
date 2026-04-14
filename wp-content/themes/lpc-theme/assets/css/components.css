@@ -1,0 +1,38 @@
+.modal {
+  flex-direction: column;
+}
+
+.gallery-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+}
+
+.gallery-item {
+  text-align: right;
+  padding: 1rem;
+}
+
+.rounded-img {
+  border-radius: 1vw 1vw 0 0;
+}
+
+.gallery-filmstrip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 5vh;
+  width: min(80vw, 80vh);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  gap: 0.5rem;
+  padding: 1rem;
+}
+
+.filmstrip-thumb {
+  height: 100%;
+}
+
+.filmstrip-thumb.active {
+  border: 2px solid white;
+}

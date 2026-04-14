@@ -8,6 +8,7 @@
   width: 100%;
   backdrop-filter: blur(2px);
   z-index: 10;
+  padding-bottom: 0;
 }
 
 .nav-fixed {

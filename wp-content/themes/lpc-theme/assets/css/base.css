@@ -47,7 +47,7 @@ body {
     --body-gradient-2 var(--animation-duration);
 }
 
-body.dark {
+html.dark {
   --body-gradient-1: rgb(0, 102, 255);
   --body-gradient-2: rgb(30, 30, 30);
 

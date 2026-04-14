@@ -25,6 +25,13 @@ function theme_enqueue_assets()
     true
   );
 
+  wp_enqueue_style(
+    'theme-components',
+    get_template_directory_uri() . '/assets/css/components.css',
+    ['theme-base'],
+    '1.0'
+  );
+
   wp_enqueue_script(
     'theme-gallery',
     get_template_directory_uri() . '/assets/js/gallery.js',

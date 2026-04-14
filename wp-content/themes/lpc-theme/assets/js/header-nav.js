@@ -1,41 +1,47 @@
-// avoid animating on page load, especially for dark mode
-document.documentElement.classList.add("no-transition");
-window.addEventListener("load", () => {
-  document.documentElement.classList.remove("no-transition");
-});
+console.log("wht?");
+const navDock = document.getElementById("nav-wrap-dock");
+const nav = document.querySelector(".nav-wrap");
 
+const toggle = document.getElementById("theme-toggle");
+const icon = toggle?.querySelector(".icon");
+function syncWrapperHeight() {
+  const height = nav.offsetHeight;
+  navDock.style.height = height + "px";
+}
+
+function setTheme(mode) {
+  document.documentElement.classList.remove("light", "dark");
+
+  if (mode === "dark") {
+    document.documentElement.classList.add("dark");
+    if (icon) icon.textContent = "☀️";
+  } else {
+    document.documentElement.classList.add("light");
+    if (icon) icon.textContent = "🌙";
+  }
+  localStorage.setItem("theme", mode);
+}
+// // initial theme
+// const savedTheme =
+//   localStorage.getItem("theme") ||
+//   (window.matchMedia("(prefers-color-scheme: dark)").matches
+//     ? "dark"
+//     : "light");
+
+// setTheme(savedTheme);
+
+window.addEventListener("load", () => {
+  nav.classList.add("nav-show", "nav-fixed");
+  syncWrapperHeight();
+});
+// window.addEventListener("load", syncWrapperHeight);
 document.addEventListener("DOMContentLoaded", () => {
   // =====================
   // THEME TOGGLE
   // =====================
 
-  const toggle = document.getElementById("theme-toggle");
-  const icon = toggle?.querySelector(".icon");
-
-  function setTheme(mode) {
-    document.body.classList.remove("light", "dark");
-
-    if (mode === "dark") {
-      document.body.classList.add("dark");
-      if (icon) icon.textContent = "☀️";
-    } else {
-      document.body.classList.add("light");
-      if (icon) icon.textContent = "🌙";
-    }
-    localStorage.setItem("theme", mode);
-  }
-
-  // initial theme
-  const savedTheme =
-    localStorage.getItem("theme") ||
-    (window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light");
-
-  setTheme(savedTheme);
-
   toggle?.addEventListener("click", () => {
-    const isDark = document.body.classList.contains("dark");
+    const isDark = document.documentElement.classList.contains("dark");
     setTheme(isDark ? "light" : "dark");
   });
 
@@ -43,16 +49,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // NAV SETUP
   // =====================
 
-  const navDock = document.getElementById("nav-wrap-dock");
-  const nav = document.querySelector(".nav-wrap");
-
-  if (!nav || !navDock) return;
-
-  navDock.style.height = nav.offsetHeight + "px";
+  console.log("doing navDock.style.height");
   const wrapperRectOffset = nav.getBoundingClientRect().bottom - window.scrollY;
   console.log(`wrapperRectOffset just got set: ${wrapperRectOffset}`);
-
-  // function syncWrapperHeight() {}
 
   function syncFooter() {
     const headerNavbar = document.getElementById("header-navbar");
@@ -155,6 +154,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // =====================
   // EVENTS
   // =====================
+
+  window.addEventListener("resize", syncWrapperHeight);
 
   window.addEventListener("load", syncFooter);
   window.addEventListener("resize", syncFooter);
