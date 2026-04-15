@@ -19,7 +19,8 @@
 }
 
 .hidden {
-  display: none;
+  /* display: none; */
+  visibility: hidden;
 }
 
 .gallery-swiper {

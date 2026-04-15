@@ -7,21 +7,21 @@ function theme_enqueue_assets()
     'theme-base',
     get_template_directory_uri() . '/assets/css/base.css',
     [],
-    '1.0'
+    filemtime(get_template_directory() . '/assets/css/base.css')
   );
 
   wp_enqueue_style(
-    'theme-header-nav',
+    'theme-header-nav-css',
     get_template_directory_uri() . '/assets/css/header-nav.css',
     ['theme-base'],
-    '1.0'
+    filemtime(get_template_directory() . '/assets/css/header-nav.css')
   );
 
   wp_enqueue_script(
-    'theme-header-nav',
+    'theme-header-nav-js',
     get_template_directory_uri() . '/assets/js/header-nav.js',
     [],
-    '1.0',
+    filemtime(get_template_directory() . '/assets/js/header-nav.js'),
     true
   );
 
@@ -29,22 +29,22 @@ function theme_enqueue_assets()
     'theme-components',
     get_template_directory_uri() . '/assets/css/components.css',
     ['theme-base'],
-    '1.0'
+    filemtime(get_template_directory() . '/assets/css/components.css')
   );
 
   wp_enqueue_script(
-    'theme-gallery',
+    'theme-gallery-js',
     get_template_directory_uri() . '/assets/js/gallery.js',
     [],
-    '1.0',
+    filemtime(get_template_directory() . '/assets/js/gallery.js'),
     true
   );
 
   wp_enqueue_style(
-    'theme-gallery',
+    'theme-gallery-css',
     get_template_directory_uri() . '/assets/css/gallery.css',
     ['theme-base'],
-    '1.0'
+    filemtime(get_template_directory() . '/assets/css/gallery.css')
   );
 }
 

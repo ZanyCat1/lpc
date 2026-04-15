@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("AM I HERE");
   const modal = document.getElementById("gallery-modal");
   const wrapper = document.querySelector(".swiper-wrapper");
   const closeBtn = document.getElementById("gallery-close");
@@ -13,8 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
     img.style.cursor = "pointer";
 
     img.addEventListener("click", () => {
-      console.log("CLICKED", index);
-
       const gallery = window.galleryData || [];
 
       wrapper.innerHTML = "";
@@ -68,24 +65,19 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       const scrollFilmstripTo = (index) => {
-        const thumbs = filmstrip.querySelectorAll(".filmstrip-thumb");
-        const active = thumbs[index];
+        const thumbs = document.querySelectorAll(".filmstrip-thumb");
 
+        thumbs.forEach((el, i) => {
+          el.classList.toggle("active", i === index);
+        });
+
+        const active = thumbs[index];
         if (!active) return;
 
-        const containerRect = filmstrip.getBoundingClientRect();
-        const activeRect = active.getBoundingClientRect();
+        const containerCenter = filmstrip.clientWidth / 2;
+        const itemCenter = active.offsetLeft + active.offsetWidth / 2;
 
-        const offset =
-          activeRect.left -
-          containerRect.left -
-          containerRect.width / 2 +
-          activeRect.width / 2;
-
-        filmstrip.scrollBy({
-          left: offset,
-          behavior: "smooth",
-        });
+        filmstrip.scrollLeft = itemCenter - containerCenter;
       };
 
       const updateActive = (activeIndex) => {
@@ -99,6 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
       };
 
       updateActive(index);
+      filmstrip.classList.add("smooth-scroll");
 
       swiper.on("slideChange", () => {
         const realIndex = swiper.realIndex;
@@ -116,15 +109,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // close
     closeBtn.onclick = () => {
-      modal.classList.add("hidden");
-      document.body.style.overflow = "";
+      closeModal();
     };
 
     modal.onclick = (e) => {
       if (e.target === modal) {
-        modal.classList.add("hidden");
-        document.body.style.overflow = "";
+        closeModal();
       }
     };
   });
+  function closeModal() {
+    filmstrip.classList.remove("smooth-scroll");
+    modal.classList.add("hidden");
+    document.body.style.overflow = "";
+  }
 });
