@@ -22,7 +22,6 @@
   height: 3rem;
   display: flex;
   align-items: center;
-  gap: 0.25rem;
   padding: 1rem 0;
   overflow-x: auto;
   overflow-y: hidden;
@@ -33,10 +32,13 @@
 
 .filmstrip-thumb {
   height: 100%;
+  filter: grayscale(100%);
 }
 
 .filmstrip-thumb.active {
-  border: 2px solid white;
   transform: scale(1.1);
-  transition: transform var(--animation-duration) ease;
+  filter: none;
+  transition:
+    transform var(--animation-duration) ease,
+    filter var(--animation-duration) ease;
 }
