@@ -32,15 +32,65 @@
         <div class="nav-center-gap"></div>
         <nav class="navbar" id="header-navbar">
           <?php
-          wp_nav_menu([
-            'theme_location' => 'primary',
-            'container' => false,
-            'menu_class' => 'nav-list',
-          ]);
+          // normal wordpress nav
+          // wp_nav_menu([
+          //   'theme_location' => 'primary',
+          //   'container' => false,
+          //   'menu_class' => 'nav-list',
+          // ]);
+          // our custom nav
+          $locations = get_nav_menu_locations();
+          $menu = wp_get_nav_menu_object($locations['primary']);
+          $items = wp_get_nav_menu_items($menu->term_id);
+
+          $tree = [];
+          $lookup = [];
+
+          // first pass: index all items
+          foreach ($items as $item) {
+            $item->children = [];
+            $lookup[$item->ID] = $item;
+          }
+
+          // second pass: assign children
+          foreach ($items as $item) {
+            if ($item->menu_item_parent) {
+              $lookup[$item->menu_item_parent]->children[] = $item;
+            } else {
+              $tree[] = $item;
+            }
+          }
+
+          echo '<ul class="nav-list">';
+          foreach ($tree as $item) {
+            echo '<li class="menu-item">';
+            echo '<div>';
+            echo '<a href="' . esc_url($item->url) . '">' . esc_html($item->title) . '</a>';
+
+            if (!empty($item->children)) {
+              echo '<div class="sub-menu-wrap">';
+              echo '<ul class="sub-menu">';
+
+              foreach ($item->children as $child) {
+                echo '<li class="menu-item">';
+                echo '<a href="' . esc_url($child->url) . '">' . esc_html($child->title) . '</a>';
+                echo '</li>';
+              }
+
+              echo '</ul>';
+              echo '</div>';
+            }
+
+            echo '</div>';
+            echo '</li>';
+          }
+          echo '</ul>';
           ?>
 
-          <div id="theme-toggle">
-            <span class="icon">🌙</span>
+          <div>
+            <div id="theme-toggle">
+              <span class="icon">🌙</span>
+            </div>
           </div>
         </nav>
 

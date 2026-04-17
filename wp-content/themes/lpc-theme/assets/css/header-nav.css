@@ -29,10 +29,6 @@
    THEME TOGGLE
 ========================= */
 
-#theme-toggle {
-  position: relative;
-  margin: auto 20px;
-}
 #theme-toggle span {
   cursor: pointer;
 }
@@ -53,9 +49,47 @@
   padding: 0;
   display: flex;
   flex-wrap: wrap;
+  height: var(--menu-height);
+  overflow: hidden;
+  transition:
+    height var(--animation-duration) ease,
+    visibility var(--animation-duration) ease;
 }
 
-@media (max-width: 449px) {
+.nav-list:hover {
+  height: var(--menu-height);
+}
+
+.sub-menu-wrap {
+  position: relative;
+}
+
+.sub-menu {
+  list-style: none;
+  padding: 0;
+  visibility: hidden;
+  opacity: 0;
+  transition:
+    opacity var(--animation-duration),
+    visibility 0s linear var(--animation-duration);
+}
+
+.sub-menu {
+  position: absolute;
+}
+
+.menu-item.active .sub-menu {
+  visibility: visible;
+  opacity: 1;
+  transition:
+    opacity var(--animation-duration) ease,
+    visibility 0s;
+}
+/* .menu-item:hover .sub-menu {
+  visibility: unset;
+  opacity: 1;
+} */
+@media (max-width: 899px) {
   .nav-list {
     display: grid;
     grid-template-columns: repeat(2, auto);
@@ -67,7 +101,8 @@
    LINKS
 ========================= */
 
-.nav-list a {
+.nav-list a,
+#theme-toggle {
   position: relative;
   display: inline-block;
   margin: 14px 20px;

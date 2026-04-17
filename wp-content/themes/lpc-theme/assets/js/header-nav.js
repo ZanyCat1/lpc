@@ -1,12 +1,107 @@
-console.log("wht?");
+const BREAKPOINT = 899;
+const mq = window.matchMedia("(max-width: 899px)");
+mq.addEventListener("change", handleBreakpointChange);
+
 const navDock = document.getElementById("nav-wrap-dock");
 const nav = document.querySelector(".nav-wrap");
+const navList = document.querySelector(".nav-list");
+let baseHeight = navList.offsetHeight;
+navList.style.setProperty("--menu-height", `${baseHeight}px`);
+let wrapperRect = navDock.getBoundingClientRect();
 
 const toggle = document.getElementById("theme-toggle");
 const icon = toggle?.querySelector(".icon");
+
+const menuItems = document.querySelectorAll(".nav-list > .menu-item");
+let activeItem = null;
+
+let listenersActive = false;
+
+function enableDesktopNav() {
+  if (listenersActive) return;
+  addMenuItemListeners();
+  listenersActive = true;
+}
+
+function disableDesktopNav() {
+  if (!listenersActive) return;
+
+  removeMenuItemListeners();
+
+  navList.style.removeProperty("--menu-height");
+  navList.style.setProperty("--menu-height", `${baseHeight}px`);
+
+  document
+    .querySelectorAll(".menu-item.active")
+    .forEach((el) => el.classList.remove("active"));
+
+  listenersActive = false;
+}
+
+function handleBreakpointChange(e) {
+  if (e.matches) {
+    disableDesktopNav();
+  } else {
+    enableDesktopNav();
+  }
+}
+
+function addMenuItemListeners() {
+  menuItems.forEach((menuItem) => {
+    if (wrapperRect.bottom <= 0) return;
+    const subMenu = menuItem.querySelector(".sub-menu");
+
+    const onEnter = () => {
+      if (activeItem === menuItem) return;
+      if (activeItem) activeItem.classList.remove("active");
+
+      if (!subMenu) {
+        navList.style.setProperty("--menu-height", `${baseHeight}px`);
+        activeItem = null;
+        return;
+      }
+      const subMenuHeight = subMenu.scrollHeight;
+
+      menuItem.classList.add("active");
+      activeItem = menuItem;
+
+      navList.style.setProperty(
+        "--menu-height",
+        `${baseHeight + subMenuHeight}px`,
+      );
+    };
+    menuItem._onEnter = onEnter;
+    menuItem.addEventListener("mouseenter", onEnter);
+  });
+
+  const onExit = () => {
+    navList.style.setProperty("--menu-height", `${baseHeight}px`);
+
+    if (activeItem) {
+      activeItem.classList.remove("active");
+      activeItem = null;
+    }
+  };
+
+  navList._onExit = onExit;
+  navList.addEventListener("mouseleave", onExit);
+}
+
+function removeMenuItemListeners() {
+  menuItems.forEach((menuItem) => {
+    if (menuItem._onEnter) {
+      menuItem.removeEventListener("mouseenter", menuItem._onEnter);
+      delete menuItem._onEnter;
+    }
+  });
+  if (navList._onExit) {
+    navList.removeEventListener("mouseleave", navList._onExit);
+    delete navList._onExit;
+  }
+}
+
 function syncWrapperHeight() {
-  const height = nav.offsetHeight;
-  navDock.style.height = height + "px";
+  navDock.style.height = `${baseHeight}px`;
 }
 
 function setTheme(mode) {
@@ -21,20 +116,7 @@ function setTheme(mode) {
   }
   localStorage.setItem("theme", mode);
 }
-// // initial theme
-// const savedTheme =
-//   localStorage.getItem("theme") ||
-//   (window.matchMedia("(prefers-color-scheme: dark)").matches
-//     ? "dark"
-//     : "light");
 
-// setTheme(savedTheme);
-
-window.addEventListener("load", () => {
-  nav.classList.add("nav-show", "nav-fixed");
-  syncWrapperHeight();
-});
-// window.addEventListener("load", syncWrapperHeight);
 document.addEventListener("DOMContentLoaded", () => {
   // =====================
   // THEME TOGGLE
@@ -48,11 +130,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // =====================
   // NAV SETUP
   // =====================
-
-  console.log("doing navDock.style.height");
-  const wrapperRectOffset = nav.getBoundingClientRect().bottom - window.scrollY;
-  console.log(`wrapperRectOffset just got set: ${wrapperRectOffset}`);
-
   function syncFooter() {
     const headerNavbar = document.getElementById("header-navbar");
     const footerNavbar = document.getElementById("footer-navbar");
@@ -69,7 +146,17 @@ document.addEventListener("DOMContentLoaded", () => {
   let resizeTimer;
 
   function handleResize() {
-    navDock.style.height = nav.offsetHeight + "px";
+    // 1. remove controlled height so layout can settle
+    navList.style.removeProperty("--menu-height");
+
+    // 2. measure natural height (rows wrapping, etc.)
+    baseHeight = navList.offsetHeight;
+
+    // 3. set it back as the controlled height
+    navList.style.setProperty("--menu-height", `${baseHeight}px`);
+
+    // 4. update dock to match
+    navDock.style.height = baseHeight + "px";
     isResizing = true;
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
@@ -103,11 +190,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const scrollingUp = delta < 0;
     const scrollingDown = delta > 0;
 
-    const wrapperRect = navDock.getBoundingClientRect();
+    wrapperRect = navDock.getBoundingClientRect();
     const navRect = nav.getBoundingClientRect();
     const wrapperVisible = wrapperRect.bottom > 0;
     const wrapperLinedUp = navRect.top <= wrapperRect.top;
-    const navScrolledAway = currentScrollY > nav.offsetHeight;
+    const navScrolledAway = currentScrollY > baseHeight;
 
     const now = Date.now();
     const timeSinceLast = now - lastScrollTime;
@@ -133,7 +220,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (navScrolledAway) {
       nav.classList.add("nav-fixed");
-      void nav.offsetHeight;
+      void baseHeight;
       nav.classList.remove("no-anim");
 
       if (scrollUpDistance > SHOW_THRESHOLD) {
@@ -154,12 +241,24 @@ document.addEventListener("DOMContentLoaded", () => {
   // =====================
   // EVENTS
   // =====================
+  window.addEventListener("load", () => {
+    nav.classList.add("nav-show", "nav-fixed");
+    syncWrapperHeight();
+    syncFooter();
+    handleBreakpointChange(mq);
+    // addMenuItemListeners();
+  });
 
-  window.addEventListener("resize", syncWrapperHeight);
-
-  window.addEventListener("load", syncFooter);
-  window.addEventListener("resize", syncFooter);
-
-  window.addEventListener("resize", handleResize);
+  window.addEventListener("resize", () => {
+    syncWrapperHeight();
+    syncFooter();
+    handleResize();
+  });
   window.addEventListener("scroll", handleScroll);
+  // window.addEventListener("resize", syncWrapperHeight);
+
+  // window.addEventListener("load", syncFooter);
+  // window.addEventListener("resize", syncFooter);
+
+  // window.addEventListener("resize", handleResize);
 });
