@@ -28,7 +28,7 @@
 
     <div id="nav-wrap-dock">
       <div class="nav-wrap">
-        <div class="nav-left-gap"></div>
+        <div class="nav-left-gap"><?php the_custom_logo() ?></div>
         <div class="nav-center-gap"></div>
         <nav class="navbar" id="header-navbar">
           <?php
