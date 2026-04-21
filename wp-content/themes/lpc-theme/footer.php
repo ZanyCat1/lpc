@@ -5,9 +5,6 @@
     <div class="nav-center-gap"></div>
 
     <nav class="navbar" id="footer-navbar">
-      <!-- <div class="theme-toggle" id="theme-toggle">
-          <span class="icon">🌙</span>
-        </div> -->
     </nav>
 
   </div>

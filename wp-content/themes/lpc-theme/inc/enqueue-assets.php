@@ -46,6 +46,20 @@ function theme_enqueue_assets()
     ['theme-base'],
     filemtime(get_template_directory() . '/assets/css/gallery.css')
   );
+
+  wp_enqueue_script(
+    'theme-state-lookup-js',
+    get_template_directory_uri() . '/assets/js/state-lookup.js',
+    [],
+    filemtime(get_template_directory() . '/assets/js/state-lookup.js'),
+    true
+  );
+
+  wp_localize_script(
+    'theme-state-lookup-js',
+    'STATE_REGIONS',
+    get_option('state_regions', [])
+  );
 }
 
 wp_enqueue_script('swiper', 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js', [], null, true);

@@ -133,10 +133,17 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // debugging, take out later
-  window.addEventListener("keydown", (key) => {
-    console.log("key:", key.key);
+  window.addEventListener("keydown", (event) => {
+    console.log("key:", event.key);
     const isDark = document.documentElement.classList.contains("dark");
-    if (key.key === "d") setTheme(isDark ? "light" : "dark");
+    if (
+      event.ctrlKey &&
+      event.shiftKey &&
+      (event.key === "d" || event.key === "D")
+    ) {
+      event.preventDefault();
+      setTheme(isDark ? "light" : "dark");
+    }
   });
 
   // =====================
