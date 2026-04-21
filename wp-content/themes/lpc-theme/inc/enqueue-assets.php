@@ -48,18 +48,28 @@ function theme_enqueue_assets()
   );
 
   wp_enqueue_script(
-    'theme-state-lookup-js',
-    get_template_directory_uri() . '/assets/js/state-lookup.js',
+    'theme-simple-lookup-js',
+    get_template_directory_uri() . '/assets/js/simple-lookup.js',
     [],
-    filemtime(get_template_directory() . '/assets/js/state-lookup.js'),
+    filemtime(get_template_directory() . '/assets/js/simple-lookup.js'),
     true
   );
 
-  wp_localize_script(
-    'theme-state-lookup-js',
-    'STATE_REGIONS',
-    get_option('state_regions', [])
-  );
+  if (is_page_template('page-contact.php')) {
+    wp_enqueue_script(
+      'theme-state-lookup-js',
+      get_template_directory_uri() . '/assets/js/state-lookup.js',
+      [],
+      filemtime(get_template_directory() . '/assets/js/state-lookup.js'),
+      true
+    );
+
+    wp_localize_script(
+      'theme-state-lookup-js',
+      'STATE_REGIONS',
+      get_option('state_regions', [])
+    );
+  }
 }
 
 wp_enqueue_script('swiper', 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js', [], null, true);
