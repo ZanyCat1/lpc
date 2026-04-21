@@ -3,10 +3,12 @@ const mq = window.matchMedia("(max-width: 899px)");
 mq.addEventListener("change", handleBreakpointChange);
 
 const navDock = document.getElementById("nav-wrap-dock");
+const navWidth = document.getElementById("nav-width");
 const nav = document.querySelector(".nav-wrap");
 const navList = document.querySelector(".nav-list");
 let baseHeight = navList.offsetHeight;
-navList.style.setProperty("--menu-height", `${baseHeight}px`);
+navDock.style.setProperty("--menu-height", `${baseHeight}px`);
+navWidth.style.setProperty("--menu-height", `${baseHeight}px`);
 let wrapperRect = navDock.getBoundingClientRect();
 
 const toggle = document.getElementById("theme-toggle");
@@ -28,8 +30,8 @@ function disableDesktopNav() {
 
   removeMenuItemListeners();
 
-  navList.style.removeProperty("--menu-height");
-  navList.style.setProperty("--menu-height", `${baseHeight}px`);
+  navDock.style.removeProperty("--menu-height");
+  navDock.style.setProperty("--menu-height", `${baseHeight}px`);
 
   document
     .querySelectorAll(".menu-item.active")
@@ -52,11 +54,12 @@ function addMenuItemListeners() {
     const subMenu = menuItem.querySelector(".sub-menu");
 
     const onEnter = () => {
+      console.log("entered");
       if (activeItem === menuItem) return;
       if (activeItem) activeItem.classList.remove("active");
 
       if (!subMenu) {
-        navList.style.setProperty("--menu-height", `${baseHeight}px`);
+        navDock.style.setProperty("--menu-height", `${baseHeight}px`);
         activeItem = null;
         return;
       }
@@ -65,7 +68,7 @@ function addMenuItemListeners() {
       menuItem.classList.add("active");
       activeItem = menuItem;
 
-      navList.style.setProperty(
+      navDock.style.setProperty(
         "--menu-height",
         `${baseHeight + subMenuHeight}px`,
       );
@@ -75,7 +78,8 @@ function addMenuItemListeners() {
   });
 
   const onExit = () => {
-    navList.style.setProperty("--menu-height", `${baseHeight}px`);
+    console.log("exiting");
+    navDock.style.setProperty("--menu-height", `${baseHeight}px`);
 
     if (activeItem) {
       activeItem.classList.remove("active");
@@ -102,6 +106,7 @@ function removeMenuItemListeners() {
 
 function syncWrapperHeight() {
   navDock.style.height = `${baseHeight}px`;
+  navWidth.style.height = `${baseHeight}px`;
 }
 
 function setTheme(mode) {
@@ -127,6 +132,13 @@ document.addEventListener("DOMContentLoaded", () => {
     setTheme(isDark ? "light" : "dark");
   });
 
+  // debugging, take out later
+  window.addEventListener("keydown", (key) => {
+    console.log("key:", key.key);
+    const isDark = document.documentElement.classList.contains("dark");
+    if (key.key === "d") setTheme(isDark ? "light" : "dark");
+  });
+
   // =====================
   // NAV SETUP
   // =====================
@@ -147,13 +159,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function handleResize() {
     // 1. remove controlled height so layout can settle
-    navList.style.removeProperty("--menu-height");
+    navDock.style.removeProperty("--menu-height");
 
     // 2. measure natural height (rows wrapping, etc.)
     baseHeight = navList.offsetHeight;
 
     // 3. set it back as the controlled height
-    navList.style.setProperty("--menu-height", `${baseHeight}px`);
+    navDock.style.setProperty("--menu-height", `${baseHeight}px`);
 
     // 4. update dock to match
     navDock.style.height = baseHeight + "px";

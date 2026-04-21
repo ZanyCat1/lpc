@@ -28,6 +28,7 @@
 
     <div id="nav-wrap-dock">
       <div class="nav-wrap">
+        <div id="nav-width"></div>
         <div class="nav-left-gap"><?php the_custom_logo() ?></div>
         <div class="nav-center-gap"></div>
         <nav class="navbar" id="header-navbar">
@@ -93,6 +94,7 @@
             </div>
           </div>
         </nav>
+
 
       </div>
     </div>

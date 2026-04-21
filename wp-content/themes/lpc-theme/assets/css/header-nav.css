@@ -34,10 +34,13 @@
 }
 
 .nav-left-gap,
+.nav-center-gap,
 .nav-center-gap::before,
-.navbar,
-.navbar::before {
-  transition: background-color var(--animation-duration) ease;
+.nav-center-gap::after,
+.navbar {
+  transition:
+    background-color var(--animation-duration) ease,
+    height var(--animation-duration);
 }
 /* =========================
    LISTS
@@ -62,6 +65,7 @@
 
 .sub-menu-wrap {
   position: relative;
+  white-space: nowrap;
 }
 
 .sub-menu {
@@ -85,10 +89,6 @@
     opacity var(--animation-duration) ease,
     visibility 0s;
 }
-/* .menu-item:hover .sub-menu {
-  visibility: unset;
-  opacity: 1;
-} */
 @media (max-width: 899px) {
   .nav-list {
     display: grid;
@@ -138,12 +138,23 @@
 .nav-left-gap {
   flex: 1 1 auto;
   background-color: rgba(var(--secondary-color-rgb), 0.75);
+  height: var(--menu-height);
+  transition:
+    height var(--animation-duration) ease,
+    background-color var(--animation-duration) ease;
 }
+.custom-logo {
+  position: fixed;
+  display: flex;
+  height: 47px;
+  width: unset;
+}
+
 .nav-center-gap {
   flex: 0 0 30px;
   width: 30px;
   position: relative;
-  background: transparent;
+  background-color: transparent;
   overflow: hidden;
 }
 
@@ -151,8 +162,16 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(var(--secondary-color-rgb), 0.75);
+  background-color: rgba(var(--secondary-color-rgb), 0.75);
   clip-path: polygon(100% 0, 0 100%, -100% 0);
+}
+.nav-center-gap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(var(--primary-color-rgb), 0.75);
+  /* background-color: white; */
+  clip-path: polygon(0% 100%, 100% 0%, 200% 100%);
 }
 
 /* =========================
@@ -160,12 +179,14 @@
 ========================= */
 
 .nav-wrap {
-  background: linear-gradient(
-    to top left,
-    var(--header-gap-gradient-1),
-    var(--header-gap-gradient-2),
-    var(--header-gap-gradient-1)
-  );
+}
+
+#nav-width {
+  width: 100%;
+  border-bottom: 1px solid black;
+  pointer-events: none;
+  position: absolute;
+  z-index: 100;
 }
 
 .navbar {
@@ -175,17 +196,6 @@
   justify-content: flex-end;
   width: fit-content;
   background-color: rgba(var(--primary-color-rgb), 0.75);
-}
-
-.navbar::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -30px;
-  width: 30px;
-  height: 100%;
-  background: inherit;
-  clip-path: polygon(100% 0, 200% 100%, 0 100%);
 }
 
 /* =========================

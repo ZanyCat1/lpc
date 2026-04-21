@@ -52,3 +52,4 @@ wp_enqueue_script('swiper', 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundl
 wp_enqueue_style('swiper', 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css');
 
 add_action('wp_enqueue_scripts', 'theme_enqueue_assets');
+add_theme_support('custom-logo');
