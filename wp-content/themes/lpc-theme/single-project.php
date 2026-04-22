@@ -17,7 +17,7 @@
 
       <?php if (!empty($image_ids)) : ?>
         <?php
-        get_template_part('template-parts/gallery-modal', null, [
+        get_template_part('template-parts/gallery/project', null, [
           'ids' => implode(',', $image_ids)
         ]);
         ?>

@@ -19,24 +19,28 @@ get_header(); ?>
 
   <?php if (!empty($projects)) : ?>
     <div class="projects-grid">
-
       <?php foreach ($projects as $project) : ?>
+        <?php if (has_term(['Construction'], 'project_tag', $project->ID)): ?>
 
-        <a class="project-card" href="<?php echo get_permalink($project->ID); ?>">
+          <a class="project-card" href="<?php echo get_permalink($project->ID); ?>">
 
-          <div class="project-image">
-            <?php
-            if (has_post_thumbnail($project->ID)) {
-              echo get_the_post_thumbnail($project->ID, 'medium');
-            }
-            ?>
-          </div>
+            <div class="project-image">
+              <?php
+              if (has_post_thumbnail($project->ID)) {
+                echo get_the_post_thumbnail($project->ID, 'medium');
+              }
+              ?>
+            </div>
 
-          <div class="project-info">
-            <h2><?php echo esc_html($project->post_title); ?></h2>
-          </div>
+            <div class="project-info">
+              <h2><?php echo esc_html($project->post_title); ?></h2>
+            </div>
 
-        </a>
+          </a>
+
+        <?php endif ?>
+
+
 
       <?php endforeach; ?>
 

@@ -1,3 +1,4 @@
+<?php get_template_part('template-parts/gallery/core'); ?>
 <footer class="site-footer">
   <div class="nav-wrap">
 

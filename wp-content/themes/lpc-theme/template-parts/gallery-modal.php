@@ -56,5 +56,6 @@ foreach ($ids as $id) {
 </div>
 
 <script>
+  // only allowing one gallery per page. Scope this if we want multiple galleries
   window.galleryData = <?php echo json_encode($images); ?>;
 </script>
