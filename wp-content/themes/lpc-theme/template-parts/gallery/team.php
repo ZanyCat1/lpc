@@ -27,9 +27,7 @@ foreach ($ids as $id) {
       <div class="gallery-item" data-index="<?php echo $index; ?>">
 
         <div class="gallery-thumb">
-          <img src="<?php echo esc_url($img['thumb']); ?>"
-            alt="<?php echo esc_attr($img['alt']); ?>"
-            class="rounded-img">
+          <?php echo wp_get_attachment_image($ids[$index], 'thumbnail', false, ['sizes' => '25vw']); ?>
         </div>
 
         <div class="gallery-text">

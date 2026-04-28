@@ -23,25 +23,26 @@ document.addEventListener("DOMContentLoaded", () => {
         slide.classList.add("swiper-slide");
 
         slide.innerHTML = `
-        <div class="slide-inner">
-          <div class="slide-content">
-            <img 
-              src="${item.src}" 
-              srcset="${item.srcset || ""}" 
-              sizes="${item.sizes || ""}" 
-              alt="${item.alt || ""}"
-            >
-            <div class="slide-meta">
-              ${item.caption ? `<strong>${item.caption}</strong>` : ""}
-              ${item.description ? `<p>${item.description}</p>` : ""}
+          <div class="slide-inner">
+            <div class="slide-content">
+              <img 
+                data-src="${item.src}" 
+                data-srcset="${item.srcset || ""}" 
+                data-sizes="${item.sizes || ""}" 
+                alt="${item.alt || ""}"
+              >
+
+              <div class="slide-meta">
+                ${item.caption ? `<strong>${item.caption}</strong>` : ""}
+                ${item.description ? `<p>${item.description}</p>` : ""}
+              </div>
             </div>
           </div>
-        </div>
-      `;
+        `;
 
         thumb.src = item.thumb;
         thumb.classList.add("filmstrip-thumb");
-        thumb.dataset.index = gallery.indexOf(item);
+        thumb.dataset.index = index;
 
         wrapper.appendChild(slide);
         filmstrip.appendChild(thumb);
@@ -63,6 +64,24 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         initialSlide: index,
       });
+      function loadSlideImage(slideEl) {
+        const img = slideEl.querySelector("img");
+        if (!img || img.dataset.loaded) return;
+
+        img.src = img.dataset.src;
+
+        if (img.dataset.srcset) {
+          img.srcset = img.dataset.srcset;
+        }
+
+        if (img.dataset.sizes) {
+          img.sizes = img.dataset.sizes;
+        }
+
+        img.dataset.loaded = "true";
+      }
+
+      loadSlideImage(swiper.slides[swiper.activeIndex] || swiper.slides[0]);
 
       const scrollFilmstripTo = (index) => {
         const thumbs = document.querySelectorAll(".filmstrip-thumb");
@@ -96,6 +115,12 @@ document.addEventListener("DOMContentLoaded", () => {
       swiper.on("slideChange", () => {
         const realIndex = swiper.realIndex;
         updateActive(realIndex);
+        const i = swiper.activeIndex;
+
+        [i, i + 1, i - 1].forEach((idx) => {
+          const slide = swiper.slides[idx];
+          if (slide) loadSlideImage(slide);
+        });
       });
 
       const filmstripItems = filmstrip.querySelectorAll(".filmstrip-thumb");

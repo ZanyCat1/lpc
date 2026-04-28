@@ -27,13 +27,17 @@ get_header(); ?>
             <div class="project-image">
               <?php
               if (has_post_thumbnail($project->ID)) {
-                echo get_the_post_thumbnail($project->ID, 'medium');
+                echo get_the_post_thumbnail(
+                  $project->ID,
+                  'medium-large-s',
+                  ['loading' => 'lazy']
+                );
               }
               ?>
             </div>
 
             <div class="project-info">
-              <h2><?php echo esc_html($project->post_title); ?></h2>
+              <h2 class="project-title"><?php echo esc_html($project->post_title); ?></h2>
             </div>
 
           </a>

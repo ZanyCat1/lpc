@@ -44,7 +44,9 @@ body {
   );
   transition:
     --body-gradient-1 var(--animation-duration),
-    --body-gradient-2 var(--animation-duration);
+    --body-gradient-2 var(--animation-duration),
+    background-color var(--animation-duration),
+    color var(--animation-duration);
 }
 
 img {

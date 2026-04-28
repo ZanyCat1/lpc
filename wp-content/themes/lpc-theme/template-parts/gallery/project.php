@@ -19,31 +19,30 @@ foreach ($ids as $id) {
 }
 ?>
 
-<div class="gallery-container"
-  data-gallery='<?php echo esc_attr(json_encode($images)); ?>'>
+<div class="gallery-grid">
+  <?php foreach ($images as $index => $img): ?>
+    <a class="gallery-card" data-index="<?php echo $index; ?>">
 
-  <div class="gallery-list">
-    <?php foreach ($images as $index => $img): ?>
-      <div class="gallery-item" data-index="<?php echo $index; ?>">
-
-        <div class="gallery-thumb">
-          <img src="<?php echo esc_url($img['thumb']); ?>"
-            alt="<?php echo esc_attr($img['alt']); ?>">
-        </div>
-
-        <div class="gallery-text">
-          <?php if ($img['caption']): ?>
-            <strong><?php echo esc_html($img['caption']); ?></strong>
-          <?php endif; ?>
-
-          <?php if ($img['description']): ?>
-            <p><?php echo esc_html($img['description']); ?></p>
-          <?php endif; ?>
-        </div>
-
+      <div class="gallery-thumb">
+        <?php echo wp_get_attachment_image(
+          $ids[$index],
+          'medium-large-s',
+          ['loading' => 'lazy']
+        ); ?>
       </div>
-    <?php endforeach; ?>
-  </div>
+
+      <div class="gallery-text">
+        <?php if ($img['caption']): ?>
+          <strong><?php echo esc_html($img['caption']); ?></strong>
+        <?php endif; ?>
+
+        <?php if ($img['description']): ?>
+          <p><?php echo esc_html($img['description']); ?></p>
+        <?php endif; ?>
+      </div>
+
+    </a>
+  <?php endforeach; ?>
 
 </div>
 <script>
