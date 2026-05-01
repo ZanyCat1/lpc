@@ -24,7 +24,7 @@ foreach ($ids as $id) {
   <div>THE DIV</div>
   <div class="gallery-list">
     <?php foreach ($images as $index => $img): ?>
-      <div class="gallery-item" data-index="<?php echo $index; ?>">
+      <div class="gallery-card team-gallery-card" data-index="<?php echo $index; ?>">
 
         <div class="gallery-thumb">
           <?php echo wp_get_attachment_image($ids[$index], 'thumbnail', false, ['sizes' => '25vw']); ?>

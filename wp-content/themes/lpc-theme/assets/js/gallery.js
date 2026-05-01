@@ -1,80 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // =========================
-  // GRID: 2-STAGE LAZY CONTROL
-  // =========================
-  const gridImgs = document.querySelectorAll(".gallery-thumb img");
-
-  gridImgs.forEach((img) => {
-    // store original responsive data
-    img.dataset.src = img.currentSrc || img.src;
-    img.dataset.srcset = img.srcset;
-    img.dataset.sizes = img.sizes;
-
-    // force initial low-res thumbnail only
-    img.srcset = "";
-    img.sizes = "";
-  });
-
-  // Stage 1: 200% viewport → load 150px only
-  const nearObserver = new IntersectionObserver(
-    (entries, obs) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-
-        const img = entry.target;
-
-        if (img.dataset.nearLoaded) return;
-
-        // already has src (150px), just mark it
-        img.dataset.nearLoaded = "true";
-
-        obs.unobserve(img);
-      });
-    },
-    {
-      rootMargin: "100% 0px", // 200% total (1 screen above + below)
-      threshold: 0.01,
-    },
-  );
-
-  // Stage 2: visible → upgrade to responsive
-  const visibleObserver = new IntersectionObserver(
-    (entries, obs) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-
-        const img = entry.target;
-
-        if (img.dataset.upgraded) return;
-
-        // restore responsive behavior
-        if (img.dataset.srcset) {
-          img.srcset = img.dataset.srcset;
-        }
-
-        if (img.dataset.sizes) {
-          img.sizes = img.dataset.sizes;
-        }
-
-        img.dataset.upgraded = "true";
-
-        obs.unobserve(img);
-      });
-    },
-    {
-      rootMargin: "0px",
-      threshold: 0.25,
-    },
-  );
-
-  gridImgs.forEach((img) => {
-    nearObserver.observe(img);
-    visibleObserver.observe(img);
-  });
-
-  // =========================
-  // MODAL / SWIPER (UNCHANGED)
-  // =========================
   const modal = document.getElementById("gallery-modal");
   const wrapper = document.querySelector(".swiper-wrapper");
   const closeBtn = document.getElementById("gallery-close");
@@ -83,6 +7,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const cards = document.querySelectorAll(".gallery-card");
   const filmstrip = document.querySelector(".gallery-filmstrip");
+
+  function loadThumb(i) {
+    const thumbs = filmstrip.querySelectorAll(".filmstrip-thumb");
+
+    const radius = 6; // how many to load around current
+
+    for (let d = -radius; d <= radius; d++) {
+      const idx = i + d;
+      const t = thumbs[idx];
+      if (!t || t.dataset.loaded) continue;
+
+      t.src = t.dataset.src;
+      t.dataset.loaded = "true";
+    }
+  }
+
+  function loadThumbsInView() {
+    const thumbs = filmstrip.querySelectorAll(".filmstrip-thumb");
+    const stripRect = filmstrip.getBoundingClientRect();
+
+    thumbs.forEach((t) => {
+      if (t.dataset.loaded) return;
+
+      const r = t.getBoundingClientRect();
+
+      if (r.right > stripRect.left - 100 && r.left < stripRect.right + 100) {
+        t.src = t.dataset.src;
+        t.dataset.loaded = "true";
+      }
+    });
+  }
 
   cards.forEach((card) => {
     const index = parseInt(card.dataset.index, 10);
@@ -118,7 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
         `;
 
-        thumb.src = item.thumb;
+        thumb.dataset.src = item.thumb;
         thumb.classList.add("filmstrip-thumb");
         thumb.dataset.index = i;
 
@@ -137,9 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
         speed: 500,
         loop: true,
         effect: "fade",
-        fadeEffect: {
-          crossFade: true,
-        },
+        fadeEffect: { crossFade: true },
         initialSlide: index,
       });
 
@@ -148,14 +101,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!img || img.dataset.loaded) return;
 
         img.src = img.dataset.src;
-
-        if (img.dataset.srcset) {
-          img.srcset = img.dataset.srcset;
-        }
-
-        if (img.dataset.sizes) {
-          img.sizes = img.dataset.sizes;
-        }
+        if (img.dataset.srcset) img.srcset = img.dataset.srcset;
+        if (img.dataset.sizes) img.sizes = img.dataset.sizes;
 
         img.dataset.loaded = "true";
       }
@@ -182,15 +129,16 @@ document.addEventListener("DOMContentLoaded", () => {
         const thumbs = filmstrip.querySelectorAll(".filmstrip-thumb");
 
         thumbs.forEach((t) => t.classList.remove("active"));
-        if (thumbs[activeIndex]) {
-          thumbs[activeIndex].classList.add("active");
-        }
+        if (thumbs[activeIndex]) thumbs[activeIndex].classList.add("active");
+
         scrollFilmstripTo(activeIndex);
       };
 
       requestAnimationFrame(() => {
+        updateActive(swiper.realIndex);
+
         requestAnimationFrame(() => {
-          updateActive(swiper.realIndex);
+          loadThumb(swiper.realIndex);
           filmstrip.classList.add("smooth-scroll");
         });
       });
@@ -198,6 +146,9 @@ document.addEventListener("DOMContentLoaded", () => {
       swiper.on("slideChange", () => {
         const realIndex = swiper.realIndex;
         updateActive(realIndex);
+
+        loadThumb(realIndex);
+        loadThumbsInView();
 
         const i = swiper.activeIndex;
 
@@ -207,6 +158,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       });
 
+      filmstrip.addEventListener("scroll", loadThumbsInView);
+
       const filmstripItems = filmstrip.querySelectorAll(".filmstrip-thumb");
 
       filmstripItems.forEach((thumb, i) => {
@@ -215,14 +168,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       });
     });
-
-    closeBtn.onclick = () => closeModal();
-
-    modal.onclick = (e) => {
-      if (e.target === modal) {
-        closeModal();
-      }
-    };
   });
 
   function closeModal() {
@@ -230,4 +175,10 @@ document.addEventListener("DOMContentLoaded", () => {
     modal.classList.add("hidden");
     document.body.style.overflow = "";
   }
+
+  closeBtn.onclick = closeModal;
+
+  modal.onclick = (e) => {
+    if (e.target === modal) closeModal();
+  };
 });

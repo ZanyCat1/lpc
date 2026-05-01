@@ -26,15 +26,47 @@ foreach ($ids as $id) {
 
 
       <div class="gallery-thumb">
-        <?php echo wp_get_attachment_image(
-          $ids[$index],
-          'thumbnail',
-          false,
-          [
-            'loading' => 'lazy',
-            'sizes' => '33vw'
-          ]
-        ); ?>
+        <?php
+        $id = $ids[$index];
+
+        $thumb150 = wp_get_attachment_image_url($id, 'thumbnail');
+        $thumb300 = wp_get_attachment_image_url($id, 'medium');
+        $thumb512 = wp_get_attachment_image_url($id, 'medium-large-s');
+        $alt = esc_attr($img['alt']);
+
+        $meta = wp_get_attachment_metadata($id);
+        $w = $meta['width'] ?? 150;
+        $h = $meta['height'] ?? 150;
+        ?>
+
+        <picture>
+          <!-- mobile -->
+          <source
+            media="(max-width: 450px)"
+            srcset="<?php echo esc_url($thumb150); ?> 150w"
+            sizes="33vw">
+
+          <!-- desktop -->
+          <source
+            media="(min-width: 1024px)"
+            srcset="<?php echo esc_url($thumb512); ?> 512w"
+            sizes="33vw">
+
+          <!-- tablet  -->
+          <source
+            media="(min-width: 451px)"
+            srcset="<?php echo esc_url($thumb300); ?> 300w"
+            sizes=" 33vw">
+
+          <img
+            src="<?php echo esc_url($thumb150); ?>"
+            alt="<?php echo $alt; ?>"
+            loading="lazy"
+            decoding="async"
+            width="<?php echo $w; ?>"
+            height="<?php echo $h; ?>"
+            class="rounded-img">
+        </picture>
       </div>
 
       <div class="gallery-text">

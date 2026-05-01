@@ -22,6 +22,8 @@
   --body-gradient-2: rgb(207, 239, 247);
 
   --animation-duration: 800ms;
+
+  --filmstrip-thumbnail-size: 48px;
 }
 
 /* default: no transitions on load */
