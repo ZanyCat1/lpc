@@ -1,25 +1,104 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // =========================
+  // GRID: 2-STAGE LAZY CONTROL
+  // =========================
+  const gridImgs = document.querySelectorAll(".gallery-thumb img");
+
+  gridImgs.forEach((img) => {
+    // store original responsive data
+    img.dataset.src = img.currentSrc || img.src;
+    img.dataset.srcset = img.srcset;
+    img.dataset.sizes = img.sizes;
+
+    // force initial low-res thumbnail only
+    img.srcset = "";
+    img.sizes = "";
+  });
+
+  // Stage 1: 200% viewport → load 150px only
+  const nearObserver = new IntersectionObserver(
+    (entries, obs) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+
+        const img = entry.target;
+
+        if (img.dataset.nearLoaded) return;
+
+        // already has src (150px), just mark it
+        img.dataset.nearLoaded = "true";
+
+        obs.unobserve(img);
+      });
+    },
+    {
+      rootMargin: "100% 0px", // 200% total (1 screen above + below)
+      threshold: 0.01,
+    },
+  );
+
+  // Stage 2: visible → upgrade to responsive
+  const visibleObserver = new IntersectionObserver(
+    (entries, obs) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+
+        const img = entry.target;
+
+        if (img.dataset.upgraded) return;
+
+        // restore responsive behavior
+        if (img.dataset.srcset) {
+          img.srcset = img.dataset.srcset;
+        }
+
+        if (img.dataset.sizes) {
+          img.sizes = img.dataset.sizes;
+        }
+
+        img.dataset.upgraded = "true";
+
+        obs.unobserve(img);
+      });
+    },
+    {
+      rootMargin: "0px",
+      threshold: 0.25,
+    },
+  );
+
+  gridImgs.forEach((img) => {
+    nearObserver.observe(img);
+    visibleObserver.observe(img);
+  });
+
+  // =========================
+  // MODAL / SWIPER (UNCHANGED)
+  // =========================
   const modal = document.getElementById("gallery-modal");
   const wrapper = document.querySelector(".swiper-wrapper");
   const closeBtn = document.getElementById("gallery-close");
 
   let swiper;
 
-  const images = document.querySelectorAll(".gallery-thumb img");
+  const cards = document.querySelectorAll(".gallery-card");
   const filmstrip = document.querySelector(".gallery-filmstrip");
 
-  images.forEach((img, index) => {
-    img.style.cursor = "pointer";
+  cards.forEach((card) => {
+    const index = parseInt(card.dataset.index, 10);
 
-    img.addEventListener("click", () => {
+    card.style.cursor = "pointer";
+
+    card.addEventListener("click", () => {
       const gallery = window.galleryData || [];
 
       wrapper.innerHTML = "";
       filmstrip.innerHTML = "";
 
-      gallery.forEach((item) => {
+      gallery.forEach((item, i) => {
         const slide = document.createElement("div");
         const thumb = document.createElement("img");
+
         slide.classList.add("swiper-slide");
 
         slide.innerHTML = `
@@ -31,7 +110,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 data-sizes="${item.sizes || ""}" 
                 alt="${item.alt || ""}"
               >
-
               <div class="slide-meta">
                 ${item.caption ? `<strong>${item.caption}</strong>` : ""}
                 ${item.description ? `<p>${item.description}</p>` : ""}
@@ -42,7 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         thumb.src = item.thumb;
         thumb.classList.add("filmstrip-thumb");
-        thumb.dataset.index = index;
+        thumb.dataset.index = i;
 
         wrapper.appendChild(slide);
         filmstrip.appendChild(thumb);
@@ -64,6 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         initialSlide: index,
       });
+
       function loadSlideImage(slideEl) {
         const img = slideEl.querySelector("img");
         if (!img || img.dataset.loaded) return;
@@ -109,12 +188,17 @@ document.addEventListener("DOMContentLoaded", () => {
         scrollFilmstripTo(activeIndex);
       };
 
-      updateActive(index);
-      filmstrip.classList.add("smooth-scroll");
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          updateActive(swiper.realIndex);
+          filmstrip.classList.add("smooth-scroll");
+        });
+      });
 
       swiper.on("slideChange", () => {
         const realIndex = swiper.realIndex;
         updateActive(realIndex);
+
         const i = swiper.activeIndex;
 
         [i, i + 1, i - 1].forEach((idx) => {
@@ -132,10 +216,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-    // close
-    closeBtn.onclick = () => {
-      closeModal();
-    };
+    closeBtn.onclick = () => closeModal();
 
     modal.onclick = (e) => {
       if (e.target === modal) {
@@ -143,6 +224,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     };
   });
+
   function closeModal() {
     filmstrip.classList.remove("smooth-scroll");
     modal.classList.add("hidden");

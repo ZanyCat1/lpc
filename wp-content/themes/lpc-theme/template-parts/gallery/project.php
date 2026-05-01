@@ -20,14 +20,20 @@ foreach ($ids as $id) {
 ?>
 
 <div class="gallery-grid">
+
   <?php foreach ($images as $index => $img): ?>
     <a class="gallery-card" data-index="<?php echo $index; ?>">
+
 
       <div class="gallery-thumb">
         <?php echo wp_get_attachment_image(
           $ids[$index],
-          'medium-large-s',
-          ['loading' => 'lazy']
+          'thumbnail',
+          false,
+          [
+            'loading' => 'lazy',
+            'sizes' => '33vw'
+          ]
         ); ?>
       </div>
 
